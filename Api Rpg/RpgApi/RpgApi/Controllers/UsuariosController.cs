@@ -253,10 +253,13 @@ namespace RpgApi.Controllers
 
         private string CriarToken(Usuario usuario)
         {
+
+            //Aqui vai ser definido o que ele vai desconpactar e verificar no banco de dados para saber se você e você
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Username)
+                new Claim(ClaimTypes.Name, usuario.Username),
+                new Claim(ClaimTypes.Role, usuario.Perfil)
             };
 
             //Obtendo o valor de uma chave do arquivo json

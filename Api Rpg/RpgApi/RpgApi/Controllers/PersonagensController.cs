@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace RpgApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Jogador, Admin")]
     [ApiController]
     [Route("[Controller]")]
     public class PersonagensController : ControllerBase
@@ -26,8 +26,13 @@ namespace RpgApi.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        //Obter o id do usuário
         private int ObterUsuarioId() {
             return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        }
+
+        private string ObterPerfilUsuario() {
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
         [HttpGet("{id:int}")]
@@ -223,7 +228,7 @@ namespace RpgApi.Controllers
             }
         }
 
-         [HttpGet("GetByUser/{userId:int}")]
+        [HttpGet("GetByUser/{userId:int}")]
         public async Task<IActionResult> GetByUserAsync([FromRoute]int userId)
         {
             try
@@ -274,6 +279,23 @@ namespace RpgApi.Controllers
                 return Ok(lista);
             }
             catch(Exception ex){
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetByPerfil")]
+        public async Task<IActionResult> GetByPerfilAsync() {
+            try {
+                List<Personagem> listaPersonagem = new List<Personagem>();
+
+                if (ObterPerfilUsuario() == "Admin")
+                    listaPersonagem = await _context.Personagens.ToListAsync();
+                else 
+                    listaPersonagem = await _context.Personagens.Where(per => per.Usuario.Id == ObterUsuarioId()).ToListAsync();
+
+                return Ok(listaPersonagem);
+            }
+            catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
         }

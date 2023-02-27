@@ -20,6 +20,8 @@ namespace RpgApi.Models;
         [NotMapped]
         public string PasswordString { get; set; }
         public List<Personagem> Personagens { get; set; }
+
+        //No lugar desse perfil podemos usar um enum para classificar os perfis
         public string Perfil { get; set; }
         public string Email { get; set; }
     }
